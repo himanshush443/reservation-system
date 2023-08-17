@@ -1,4 +1,4 @@
-package io.bootify.my_app.domain;
+package io.bootify.my_app.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -7,13 +7,18 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
-import java.time.LocalDate;
-import java.time.LocalTime;
+import jakarta.persistence.Table;
+
 import java.time.OffsetDateTime;
+import java.util.HashSet;
+import java.util.Set;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -21,10 +26,14 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 
 @Entity
+@Table(name = "\"user\"")
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
-public class Reservation {
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class User {
 
     @Id
     @Column(nullable = false, updatable = false)
@@ -39,19 +48,9 @@ public class Reservation {
             generator = "primary_sequence"
     )
     private Long id;
-
-    @Column(nullable = false)
-    private LocalDate reservationDate;
-
-    @Column(nullable = false)
-    private LocalTime startTime;
-
-    @Column(nullable = false)
-    private LocalTime endTime;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    private Set<Reservation> reservations = new HashSet<>();
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
